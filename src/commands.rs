@@ -1,13 +1,15 @@
 use std::{fs, path::Path, str::FromStr};
 
-use crate::{chunk::Chunk, chunk_type::ChunkType, png::Png, Error, Result};
+use anyhow::anyhow;
+
+use crate::{chunk::Chunk, chunk_type::ChunkType, png::Png};
 
 pub fn encode(
     file: impl AsRef<Path>,
     chunk_type: &str,
     message: &str,
     output: impl AsRef<Path>,
-) -> Result<()> {
+) -> anyhow::Result<()> {
     let bytes = fs::read(file)?;
     let mut png = Png::try_from(bytes.as_slice())?;
     png.append_chunk(Chunk::new(
@@ -18,18 +20,18 @@ pub fn encode(
     Ok(())
 }
 
-pub fn decode(file: impl AsRef<Path>, chunk_type: &str) -> Result<String> {
+pub fn decode(file: impl AsRef<Path>, chunk_type: &str) -> anyhow::Result<String> {
     let bytes = fs::read(file)?;
     let png = Png::try_from(bytes.as_slice())?;
 
     let Some(chunk) = png.chunk_by_type(chunk_type) else {
-        return Err(Error::from("not found"));
+        return Err(anyhow!("not found"));
     };
 
     Ok(chunk.data_as_string()?)
 }
 
-pub fn remove(file: impl AsRef<Path>, chunk_type: &str) -> Result<String> {
+pub fn remove(file: impl AsRef<Path>, chunk_type: &str) -> anyhow::Result<String> {
     let bytes = fs::read(&file)?;
     let mut png = Png::try_from(bytes.as_slice())?;
 
@@ -39,7 +41,7 @@ pub fn remove(file: impl AsRef<Path>, chunk_type: &str) -> Result<String> {
     Ok(chunk.data_as_string()?)
 }
 
-pub fn print(file: impl AsRef<Path>) -> Result<()> {
+pub fn print(file: impl AsRef<Path>) -> anyhow::Result<()> {
     let bytes = fs::read(file)?;
     let png = Png::try_from(bytes.as_slice())?;
 

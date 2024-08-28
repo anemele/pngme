@@ -1,5 +1,7 @@
 use std::fmt::Display;
 
+use anyhow::anyhow;
+
 use crate::chunk::Chunk;
 
 pub struct Png {
@@ -16,14 +18,14 @@ impl Png {
     pub fn append_chunk(&mut self, chunk: Chunk) {
         self.chunks.push(chunk)
     }
-    pub fn remove_first_chunk(&mut self, chunk_type: &str) -> crate::Result<Chunk> {
+    pub fn remove_first_chunk(&mut self, chunk_type: &str) -> anyhow::Result<Chunk> {
         for (i, chunk) in self.chunks.iter().enumerate() {
             if chunk.chunk_type().to_string() == chunk_type {
                 let c = self.chunks.remove(i);
                 return Ok(c);
             }
         }
-        Err(crate::Error::from("not found"))
+        Err(anyhow!("not found"))
     }
     pub fn header(&self) -> &[u8; 8] {
         &Self::STANDARD_HEADER
@@ -50,12 +52,12 @@ impl Png {
 }
 
 impl TryFrom<&[u8]> for Png {
-    type Error = crate::Error;
+    type Error = anyhow::Error;
 
     fn try_from(value: &[u8]) -> Result<Self, Self::Error> {
         let head: [u8; 8] = value[..8].try_into()?;
         if head != Self::STANDARD_HEADER {
-            return Err(Self::Error::from("invalid head data"));
+            return Err(anyhow!("invalid head data"));
         }
 
         let chunk_stream = &value[8..];
@@ -82,8 +84,6 @@ mod tests {
     use crate::chunk::Chunk;
     use crate::chunk_type::ChunkType;
     use std::convert::TryFrom;
-    // use std::str::FromStr;
-    use crate::Result;
 
     fn testing_chunks() -> Vec<Chunk> {
         vec![
@@ -98,7 +98,7 @@ mod tests {
         Png::from_chunks(chunks)
     }
 
-    fn chunk_from_strings(chunk_type: &str, data: &str) -> Result<Chunk> {
+    fn chunk_from_strings(chunk_type: &str, data: &str) -> anyhow::Result<Chunk> {
         use std::str::FromStr;
 
         let chunk_type = ChunkType::from_str(chunk_type)?;

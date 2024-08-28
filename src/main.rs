@@ -9,10 +9,10 @@ mod png;
 use args::PngMeArgs;
 use commands::{decode, encode, print, remove};
 
-pub type Error = Box<dyn std::error::Error>;
-pub type Result<T> = std::result::Result<T, Error>;
+// pub type Error = Box<dyn std::error::Error>;
+// pub type Result<T> = std::result::Result<T, Error>;
 
-fn main() -> Result<()> {
+fn main() -> anyhow::Result<()> {
     let args = PngMeArgs::parse();
     match args {
         PngMeArgs::Encode {

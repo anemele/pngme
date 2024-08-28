@@ -1,5 +1,7 @@
 use std::fmt::Display;
 
+use anyhow::anyhow;
+
 use crate::chunk_type::ChunkType;
 
 pub struct Chunk {
@@ -14,7 +16,7 @@ fn get_crc32(data: &[u8]) -> u32 {
 }
 
 impl TryFrom<&[u8]> for Chunk {
-    type Error = crate::Error;
+    type Error = anyhow::Error;
 
     fn try_from(value: &[u8]) -> Result<Self, Self::Error> {
         let tmp = value[..4].try_into()?;
@@ -34,7 +36,7 @@ impl TryFrom<&[u8]> for Chunk {
                 crc: crc_read,
             })
         } else {
-            Err(Self::Error::from("error crc"))
+            Err(anyhow!("error crc"))
         }
     }
 }
@@ -80,7 +82,7 @@ impl Chunk {
     fn crc(&self) -> u32 {
         self.crc
     }
-    pub fn data_as_string(&self) -> crate::Result<String> {
+    pub fn data_as_string(&self) -> anyhow::Result<String> {
         let s = std::str::from_utf8(&self.chunk_data)?;
         Ok(s.to_string())
     }

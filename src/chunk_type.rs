@@ -1,29 +1,31 @@
 use std::{fmt::Display, str::FromStr};
 
+use anyhow::anyhow;
+
 #[derive(Debug, PartialEq, Eq)]
 pub struct ChunkType([u8; 4]);
 
 impl TryFrom<[u8; 4]> for ChunkType {
-    type Error = crate::Error;
+    type Error = anyhow::Error;
 
     fn try_from(value: [u8; 4]) -> Result<Self, Self::Error> {
         if value.iter().all(|&byte| byte.is_ascii_alphabetic()) {
             Ok(Self(value))
         } else {
-            Err(Self::Error::from("alphabet is required"))
+            Err(anyhow!("alphabet is required"))
         }
     }
 }
 
 impl FromStr for ChunkType {
-    type Err = crate::Error;
+    type Err = anyhow::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let bytes: [u8; 4] = s.as_bytes().try_into()?;
         if bytes.iter().all(|&byte| byte.is_ascii_alphabetic()) {
             Ok(Self(bytes))
         } else {
-            Err(Self::Err::from("alphabet is required"))
+            Err(anyhow!("alphabet is required"))
         }
     }
 }
