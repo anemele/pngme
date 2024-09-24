@@ -1,7 +1,5 @@
 use std::fmt::Display;
 
-use anyhow::anyhow;
-
 use crate::chunk_type::ChunkType;
 
 pub struct Chunk {
@@ -28,16 +26,15 @@ impl TryFrom<&[u8]> for Chunk {
         let tmp = value[end..end + 4].try_into()?;
         let crc_read = u32::from_be_bytes(tmp);
         let crc_computed = get_crc32(&value[4..end]);
-        if crc_read == crc_computed {
-            Ok(Self {
-                length,
-                chunk_type,
-                chunk_data: data.to_vec(),
-                crc: crc_read,
-            })
-        } else {
-            Err(anyhow!("error crc"))
+        if crc_read != crc_computed {
+            anyhow::bail!("error crc");
         }
+        Ok(Self {
+            length,
+            chunk_type,
+            chunk_data: data.to_vec(),
+            crc: crc_read,
+        })
     }
 }
 

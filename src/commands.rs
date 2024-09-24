@@ -1,7 +1,5 @@
 use std::{fs, path::Path, str::FromStr};
 
-use anyhow::anyhow;
-
 use crate::{chunk::Chunk, chunk_type::ChunkType, png::Png};
 
 pub fn encode(
@@ -25,7 +23,7 @@ pub fn decode(file: impl AsRef<Path>, chunk_type: &str) -> anyhow::Result<String
     let png = Png::try_from(bytes.as_slice())?;
 
     let Some(chunk) = png.chunk_by_type(chunk_type) else {
-        return Err(anyhow!("not found"));
+        anyhow::bail!("not found");
     };
 
     Ok(chunk.data_as_string()?)

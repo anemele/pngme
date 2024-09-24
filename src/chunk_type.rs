@@ -1,7 +1,5 @@
 use std::{fmt::Display, str::FromStr};
 
-use anyhow::anyhow;
-
 #[derive(Debug, PartialEq, Eq)]
 pub struct ChunkType([u8; 4]);
 
@@ -12,7 +10,7 @@ impl TryFrom<[u8; 4]> for ChunkType {
         if value.iter().all(|&byte| byte.is_ascii_alphabetic()) {
             Ok(Self(value))
         } else {
-            Err(anyhow!("alphabet is required"))
+            anyhow::bail!("alphabet is required")
         }
     }
 }
@@ -25,7 +23,7 @@ impl FromStr for ChunkType {
         if bytes.iter().all(|&byte| byte.is_ascii_alphabetic()) {
             Ok(Self(bytes))
         } else {
-            Err(anyhow!("alphabet is required"))
+            anyhow::bail!("alphabet is required")
         }
     }
 }

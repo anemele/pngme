@@ -1,7 +1,5 @@
 use std::fmt::Display;
 
-use anyhow::anyhow;
-
 use crate::chunk::Chunk;
 
 pub struct Png {
@@ -25,7 +23,7 @@ impl Png {
                 return Ok(c);
             }
         }
-        Err(anyhow!("not found"))
+        anyhow::bail!("not found");
     }
     pub fn header(&self) -> &[u8; 8] {
         &Self::STANDARD_HEADER
@@ -57,7 +55,7 @@ impl TryFrom<&[u8]> for Png {
     fn try_from(value: &[u8]) -> Result<Self, Self::Error> {
         let head: [u8; 8] = value[..8].try_into()?;
         if head != Self::STANDARD_HEADER {
-            return Err(anyhow!("invalid head data"));
+            anyhow::bail!("invalid head data");
         }
 
         let chunk_stream = &value[8..];

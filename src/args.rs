@@ -15,7 +15,7 @@ pub enum PngMeArgs {
         message: String,
 
         #[arg(short, long, default_value = "output.png")]
-        output: Option<PathBuf>,
+        output: PathBuf,
     },
 
     /// decode message from a PNG file by chunk-type

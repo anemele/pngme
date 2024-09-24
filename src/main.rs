@@ -20,7 +20,7 @@ fn main() -> anyhow::Result<()> {
             chunk_type,
             message,
             output,
-        } => encode(file, &chunk_type, &message, output.unwrap_or_default())?,
+        } => encode(file, &chunk_type, &message, output)?,
         PngMeArgs::Decode { file, chunk_type } => {
             let msg = decode(file, &chunk_type)?;
             println!("{}", msg)
